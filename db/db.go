@@ -14,6 +14,7 @@ import (
 var DB *sql.DB 
 var err error
 var connStr string
+var LastNoteId *int64 = new(int64) 
 
 func init(){
 	err := godotenv.Load()
@@ -52,7 +53,7 @@ func ConnectDB(){
 func GetNotes() ([]note.Note, error){
 	notes := make([]note.Note, 0, 10)
 
-	query := "SELECT id, date, title FROM notes"
+	query := "SELECT title, date FROM note"
 	rows, err := DB.Query(query)
 	if err != nil{
 		log.Println("error Query")
@@ -62,7 +63,7 @@ func GetNotes() ([]note.Note, error){
 
 	for rows.Next(){
 		var note note.Note
-		err = rows.Scan(&note.ID, &note.Title, &note.Date)
+		err = rows.Scan(&note.Title, &note.Date)
 		if err != nil{
 			log.Println("error binding")
 			return nil, err
@@ -78,37 +79,36 @@ func GetNotes() ([]note.Note, error){
 	return notes, nil 
 }
 
-func GetNotebyID(id int) (note.Note, error){
-	var note note.Note
+// func GetNotebyID(id int64) (note.Note, error){
+// 	var note note.Note
 
-	query := "SELECT id, title, date where id=$1"
+// 	query := "SELECT title, date from note where id=$1"
 
-	rows, err := DB.Query(query, id)
+// 	row  := DB.QueryRow(query, id)
 
+// 	err = row.Scan(&note.Date, &note.Title)
+
+// 	if err == sql.ErrNoRows{
+// 		log.Printf("no note with id = %d", id)
+// 		return note, err
+// 	}else if err != nil{
+// 		log.Println(err.Error())
+// 		return note, err
+// 	}else{
+// 		return note, err
+// 	}
+// }
+
+	
+
+func PostNewNote(note note.Note) error{
+
+	query := "INSERT INTO note(date, title) VALUES ($1, $2)"
+
+	_, err := DB.Exec(query, note.Date, note.Title)
 	if err != nil{
-		log.Println("error Query")
-		return note, err
+		return err
 	}
 	
-	
-	defer rows.Close()
-
-	for rows.Next(){
-		err = rows.Scan(&note.ID, &note.Date, &note.Title)
-
-		if err != nil{
-			log.Println("error binding")
-			return note, err
-		}
-	}
-
-	if rows.Err() != nil{
-		log.Println(err)
-		return note, err
-	}
-	
-
-	return note, nil 
+	return nil
 }
-
-func PostNewNote()
