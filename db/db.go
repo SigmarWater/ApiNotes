@@ -7,6 +7,7 @@ import (
 	"log"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/SigmarWater/ApiNotes/note"
 )
 
 
@@ -48,5 +49,66 @@ func ConnectDB(){
 	log.Println("succses connection")
 }
 
+func GetNotes() ([]note.Note, error){
+	notes := make([]note.Note, 0, 10)
 
+	query := "SELECT id, date, title FROM notes"
+	rows, err := DB.Query(query)
+	if err != nil{
+		log.Println("error Query")
+		return nil, err
+	}
+	defer rows.Close()
 
+	for rows.Next(){
+		var note note.Note
+		err = rows.Scan(&note.ID, &note.Title, &note.Date)
+		if err != nil{
+			log.Println("error binding")
+			return nil, err
+		}
+		notes = append(notes, note)
+	}
+
+	if err := rows.Err(); err != nil {  // (5)
+    	log.Println(err)
+		return nil, err
+	}
+
+	return notes, nil 
+}
+
+func GetNotebyID(id int) (note.Note, error){
+	var note note.Note
+
+	query := "SELECT id, title, date where id=$1"
+
+	rows, err := DB.Query(query, id)
+
+	if err != nil{
+		log.Println("error Query")
+		return note, err
+	}
+	
+	
+	defer rows.Close()
+
+	for rows.Next(){
+		err = rows.Scan(&note.ID, &note.Date, &note.Title)
+
+		if err != nil{
+			log.Println("error binding")
+			return note, err
+		}
+	}
+
+	if rows.Err() != nil{
+		log.Println(err)
+		return note, err
+	}
+	
+
+	return note, nil 
+}
+
+func PostNewNote()
