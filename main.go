@@ -13,6 +13,7 @@ import (
 
 func init(){
 	db.ConnectDB()
+	fmt.Println("Привет!")
 }
 
 type Note struct {
