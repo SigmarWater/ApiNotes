@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	//"strconv"
+	"strconv"
 	"time"
 	"github.com/SigmarWater/ApiNotes/db"
 	"github.com/SigmarWater/ApiNotes/note"
@@ -26,22 +26,22 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"notes": notes})
 	})
 
-	// router.GET("/notes/:id", func(c *gin.Context) {
-	// 	id, err := strconv.ParseInt(c.Param("id"), 0, 64)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect id"})
-	// 		return
-	// 	}
+	router.GET("/notes/:id", func(c *gin.Context) {
+		id, err := strconv.ParseInt(c.Param("id"), 0, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect id"})
+			return
+		}
 
-	// 	note, err := db.GetNotebyID(id)
+		note, err := db.GetNotebyID(id)
 
-	// 	if err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
-	// 		return
-	// 	}
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
 
-	// 	c.JSON(http.StatusOK, note)
-	// })
+		c.JSON(http.StatusOK, note)
+	})
 
 	router.POST("/notes", func(c *gin.Context) {
 		var note note.Note

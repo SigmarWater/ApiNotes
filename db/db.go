@@ -79,25 +79,25 @@ func GetNotes() ([]note.Note, error){
 	return notes, nil 
 }
 
-// func GetNotebyID(id int64) (note.Note, error){
-// 	var note note.Note
+func GetNotebyID(id int64) (note.Note, error){
+	var note note.Note
 
-// 	query := "SELECT title, date from note where id=$1"
+	query := "SELECT date, title FROM note WHERE id=$1"
 
-// 	row  := DB.QueryRow(query, id)
+	row  := DB.QueryRow(query, id)
 
-// 	err = row.Scan(&note.Date, &note.Title)
+	err = row.Scan(&note.Date, &note.Title)
 
-// 	if err == sql.ErrNoRows{
-// 		log.Printf("no note with id = %d", id)
-// 		return note, err
-// 	}else if err != nil{
-// 		log.Println(err.Error())
-// 		return note, err
-// 	}else{
-// 		return note, err
-// 	}
-// }
+	if err == sql.ErrNoRows{
+		log.Printf("no note with id = %d", id)
+		return note, err
+	}else if err != nil{
+		log.Println(err.Error())
+		return note, err
+	}else{
+		return note, err
+	}
+}
 
 	
 
@@ -109,6 +109,6 @@ func PostNewNote(note note.Note) error{
 	if err != nil{
 		return err
 	}
-	
+
 	return nil
 }
